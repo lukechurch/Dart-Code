@@ -278,10 +278,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		);
 	});
 
-	it("can quit during a build", async function () {
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("can quit during a build", async () => {
 		const config = await startDebugger(dc, flutterHelloWorldMainFile);
 		// Kick off a build, but do not await it...
 		// tslint:disable-next-line: no-floating-promises
@@ -303,10 +300,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		]);
 	});
 
-	it("receives the expected output", async function () {
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("receives the expected output", async () => {
 		const config = await startDebugger(dc, flutterHelloWorldMainFile);
 		await waitAllThrowIfTerminates(dc,
 			dc.configurationSequence(),
@@ -1123,10 +1117,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		);
 	});
 
-	it("includes fields but not getters in variables when evaluateGettersInDebugViews=false", async function () {
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("includes fields but not getters in variables when evaluateGettersInDebugViews=false", async () => {
 		await setConfigForTest("dart", "evaluateGettersInDebugViews", false);
 
 		await openFile(flutterHelloWorldGettersFile);
@@ -1307,12 +1298,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		});
 	});
 
-	describe("can evaluate when not at a breakpoint (global expression evaluation)", function () {
-		this.beforeEach(function () {
-			if (flutterTestDeviceIsWeb)
-				this.skip();
-		});
-
+	describe("can evaluate when not at a breakpoint (global expression evaluation)", () => {
 		it("simple expressions", async () => {
 			await openFile(flutterHelloWorldMainFile);
 			const config = await startDebugger(dc, flutterHelloWorldMainFile);
@@ -1491,11 +1477,6 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 
 	it("renders correct output for structured errors", async function () {
 		if (!extApi.flutterCapabilities.hasLatestStructuredErrorsWork)
-			return this.skip();
-
-		// Currently this test fails on Chrome because we always lose the race
-		// with enabling structured errors versus the error occurring
-		if (flutterTestDeviceIsWeb)
 			return this.skip();
 
 		await openFile(flutterHelloWorldBrokenFile);
