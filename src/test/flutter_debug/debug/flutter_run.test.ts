@@ -277,10 +277,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		);
 	});
 
-	it("can quit during a build", async function () {
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("can quit during a build", async () => {
 		const config = await startDebugger(dc, flutterHelloWorldMainFile);
 		// Kick off a build, but do not await it...
 		// tslint:disable-next-line: no-floating-promises
@@ -302,10 +299,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		]);
 	});
 
-	it("receives the expected output", async function () {
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("receives the expected output", async () => {
 		const config = await startDebugger(dc, flutterHelloWorldMainFile);
 		await waitAllThrowIfTerminates(dc,
 			dc.configurationSequence(),
@@ -576,10 +570,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 
 	it("stops at a breakpoint in an external package");
 
-	it("steps into the SDK if debugSdkLibraries is true", async function () {
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("steps into the SDK if debugSdkLibraries is true", async () => {
 		await openFile(flutterHelloWorldMainFile);
 		// Get location for `print`
 		const printCall = positionOf("pri^nt(");
@@ -609,10 +600,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		);
 	});
 
-	it("does not step into the SDK if debugSdkLibraries is false", async function () {
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("does not step into the SDK if debugSdkLibraries is false", async () => {
 		await openFile(flutterHelloWorldMainFile);
 		// Get location for `print`
 		const printCall = positionOf("pri^nt(");
@@ -635,10 +623,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		);
 	});
 
-	it("steps into an external library if debugExternalLibraries is true", async function () {
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("steps into an external library if debugExternalLibraries is true", async () => {
 		await openFile(flutterHelloWorldHttpFile);
 		// Get location for `http.read(`
 		const httpReadCall = positionOf("http.re^ad(");
@@ -668,10 +653,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		);
 	});
 
-	it("does not step into an external library if debugExternalLibraries is false", async function () {
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("does not step into an external library if debugExternalLibraries is false", async () => {
 		await openFile(flutterHelloWorldHttpFile);
 		// Get location for `http.read(`
 		const httpReadCall = positionOf("http.re^ad(");
@@ -694,10 +676,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		);
 	});
 
-	it("steps into a local library even if debugExternalLibraries is false", async function () {
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("steps into a local library even if debugExternalLibraries is false", async () => {
 		await openFile(flutterHelloWorldLocalPackageFile);
 		// Get location for `printMyThing()`
 		const printMyThingCall = positionOf("printMy^Thing(");
@@ -729,10 +708,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 
 	it("downloads SDK source code from the VM");
 
-	it("correctly marks non-debuggable SDK frames when debugSdkLibraries is false", async function () {
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("correctly marks non-debuggable SDK frames when debugSdkLibraries is false", async () => {
 		await openFile(flutterHelloWorldThrowInSdkFile);
 		const config = await startDebugger(dc, flutterHelloWorldThrowInSdkFile, { debugSdkLibraries: false });
 		await waitAllThrowIfTerminates(dc,
@@ -752,10 +728,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		);
 	});
 
-	it("correctly marks debuggable SDK frames when debugSdkLibraries is true", async function () {
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("correctly marks debuggable SDK frames when debugSdkLibraries is true", async () => {
 		await openFile(flutterHelloWorldThrowInSdkFile);
 		const config = await startDebugger(dc, flutterHelloWorldThrowInSdkFile, { debugSdkLibraries: true });
 		await waitAllThrowIfTerminates(dc,
@@ -775,10 +748,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		);
 	});
 
-	it("correctly marks non-debuggable external library frames when debugExternalLibraries is false", async function () {
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("correctly marks non-debuggable external library frames when debugExternalLibraries is false", async () => {
 		await openFile(flutterHelloWorldThrowInExternalPackageFile);
 		const config = await startDebugger(dc, flutterHelloWorldThrowInExternalPackageFile, { debugExternalLibraries: false });
 		await waitAllThrowIfTerminates(dc,
@@ -798,10 +768,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		);
 	});
 
-	it("correctly marks debuggable external library frames when debugExternalLibraries is true", async function () {
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("correctly marks debuggable external library frames when debugExternalLibraries is true", async () => {
 		await openFile(flutterHelloWorldThrowInExternalPackageFile);
 		const config = await startDebugger(dc, flutterHelloWorldThrowInExternalPackageFile, { debugExternalLibraries: true });
 		await waitAllThrowIfTerminates(dc,
@@ -821,10 +788,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		);
 	});
 
-	it("correctly marks debuggable local library frames even when debugExternalLibraries is false", async function () {
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("correctly marks debuggable local library frames even when debugExternalLibraries is false", async () => {
 		await openFile(flutterHelloWorldThrowInLocalPackageFile);
 		const config = await startDebugger(dc, flutterHelloWorldThrowInLocalPackageFile, { debugExternalLibraries: false });
 		await waitAllThrowIfTerminates(dc,
@@ -1090,10 +1054,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		);
 	});
 
-	it("includes fields and getters in variables when stopped at a breakpoint", async function () {
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("includes fields and getters in variables when stopped at a breakpoint", async () => {
 		await openFile(flutterHelloWorldGettersFile);
 		const config = await startDebugger(dc, flutterHelloWorldGettersFile);
 		await dc.hitBreakpoint(config, {
@@ -1122,10 +1083,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		);
 	});
 
-	it("includes fields but not getters in variables when evaluateGettersInDebugViews=false", async function () {
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("includes fields but not getters in variables when evaluateGettersInDebugViews=false", async () => {
 		await setConfigForTest("dart", "evaluateGettersInDebugViews", false);
 
 		await openFile(flutterHelloWorldGettersFile);
@@ -1306,12 +1264,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		});
 	});
 
-	describe("can evaluate when not at a breakpoint (global expression evaluation)", function () {
-		this.beforeEach(function () {
-			if (flutterTestDeviceIsWeb)
-				this.skip();
-		});
-
+	describe("can evaluate when not at a breakpoint (global expression evaluation)", () => {
 		it("simple expressions", async () => {
 			await openFile(flutterHelloWorldMainFile);
 			const config = await startDebugger(dc, flutterHelloWorldMainFile);
@@ -1457,11 +1410,7 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 		);
 	});
 
-	it("moves known files from call stacks to metadata", async function () {
-		// https://github.com/dart-lang/webdev/issues/949
-		if (flutterTestDeviceIsWeb)
-			return this.skip();
-
+	it("moves known files from call stacks to metadata", async () => {
 		await openFile(flutterHelloWorldBrokenFile);
 		const config = await startDebugger(dc, flutterHelloWorldBrokenFile);
 		config.noDebug = true;
@@ -1490,11 +1439,6 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 
 	it("renders correct output for structured errors", async function () {
 		if (!extApi.flutterCapabilities.hasLatestStructuredErrorsWork)
-			return this.skip();
-
-		// Currently this test fails on Chrome because we always lose the race
-		// with enabling structured errors versus the error occurring
-		if (flutterTestDeviceIsWeb)
 			return this.skip();
 
 		await openFile(flutterHelloWorldBrokenFile);
@@ -1567,11 +1511,6 @@ describe(`flutter run debugger (launch on ${flutterTestDeviceId})`, () => {
 
 	it("does not print original error if using structured errors", async function () {
 		if (!extApi.flutterCapabilities.hasLatestStructuredErrorsWork)
-			return this.skip();
-
-		// Currently this test fails on Chrome because we always lose the race
-		// with enabling structured errors versus the error occurring
-		if (flutterTestDeviceIsWeb)
 			return this.skip();
 
 		await openFile(flutterHelloWorldBrokenFile);
