@@ -3,11 +3,14 @@ import * as path from "path";
 import * as vs from "vscode";
 import { FlutterCapabilities } from "../capabilities/flutter";
 import { dartCodeExtensionIdentifier } from "../constants";
+import { reporter } from "../idg_reporter";
 import { FlutterCreateTriggerData } from "../interfaces";
 import { getRandomInt, mkDirRecursive } from "../utils/fs";
 import { writeFlutterSdkSettingIntoProject, writeFlutterTriggerFile } from "../utils/projects";
 
 export function createFlutterSampleInTempFolder(flutterCapabilities: FlutterCapabilities, sampleID: string, flutterSdkOverride?: string): vs.Uri | undefined {
+	reporter.report(`flutter_samples.createFlutterSampleInTempFolder`, "");
+
 	// Ensure we're on at least Flutter v1 so we know creating samples works.
 	if (!flutterCapabilities.supportsCreatingSamples) {
 		vs.window.showErrorMessage("Opening sample projects requires Flutter v1.0 or later");

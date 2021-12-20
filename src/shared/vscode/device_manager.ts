@@ -4,6 +4,7 @@ import { getAllProjectFolders } from "../../shared/vscode/utils";
 import { cancelAction, runFlutterCreatePrompt, skipAction, yesAction } from "../constants";
 import { LogCategory } from "../enums";
 import * as f from "../flutter/daemon_interfaces";
+import { reporter } from "../idg_reporter";
 import { CustomEmulator, CustomEmulatorDefinition, Emulator, EmulatorCreator, FlutterCreateCommandArgs, IFlutterDaemon, Logger, PlatformEnabler } from "../interfaces";
 import { logProcess } from "../logging";
 import { safeSpawn } from "../processes";
@@ -50,6 +51,9 @@ export class FlutterDeviceManager implements vs.Disposable {
 	public async deviceAdded(dev: f.Device): Promise<void> {
 		dev = { ...dev, type: "device" };
 		this.devices.push(dev);
+
+		reporter.report(`FlutterDeviceManager.deviceAdded`, dev.name);
+
 		// undefined is treated as true for backwards compatibility.
 		const canAutoSelectDevice = dev.ephemeral !== false;
 		const maySelectThisDevice = () => !this.currentDevice
@@ -74,6 +78,9 @@ export class FlutterDeviceManager implements vs.Disposable {
 	}
 
 	public async deviceRemoved(dev: f.Device) {
+
+		reporter.report(`FlutterDeviceManager.deviceRemoved`, dev.name);
+
 		this.devices = this.devices.filter((d) => d.id !== dev.id);
 		if (this.currentDevice && this.currentDevice.id === dev.id) {
 			this.currentDevice = undefined;
@@ -198,6 +205,8 @@ export class FlutterDeviceManager implements vs.Disposable {
 				break;
 		}
 
+		const idRep = selection.device.id;
+		reporter.report(`FlutterDeviceManager.selectDevice`, `${idRep}`);
 		return true;
 	}
 

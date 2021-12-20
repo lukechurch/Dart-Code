@@ -4,6 +4,7 @@ import { DartCapabilities } from "../../shared/capabilities/dart";
 import { FlutterCapabilities } from "../../shared/capabilities/flutter";
 import { debugLaunchProgressId, debugTerminatingProgressId, devToolsPages, doNotAskAgainAction, isInFlutterDebugModeDebugSessionContext, isInFlutterProfileModeDebugSessionContext, isInFlutterReleaseModeDebugSessionContext, widgetInspectorPage } from "../../shared/constants";
 import { DebuggerType, DebugOption, debugOptionNames, LogSeverity, VmServiceExtension } from "../../shared/enums";
+import { reporter } from "../../shared/idg_reporter";
 import { DartWorkspaceContext, DevToolsPage, IAmDisposable, IFlutterDaemon, Logger, LogMessage, WidgetErrorInspectData } from "../../shared/interfaces";
 import { disposeAll, PromiseCompleter } from "../../shared/utils";
 import { fsPath } from "../../shared/utils/fs";
@@ -141,6 +142,8 @@ export class DebugCommands implements IAmDisposable {
 		this.disposables.push(vs.commands.registerCommand("_dart.hotReload.touchBar", (args: any) => vs.commands.executeCommand("dart.hotReload", args)));
 		this.disposables.push(vs.commands.registerCommand("flutter.hotReload", (args: any) => vs.commands.executeCommand("dart.hotReload", args)));
 		this.disposables.push(vs.commands.registerCommand("dart.hotReload", async (args?: any) => {
+			reporter.report("dart.hotReload", "");
+
 			if (!debugSessions.length)
 				return;
 			const onlyDart = !!args?.onlyDart;
@@ -161,6 +164,8 @@ export class DebugCommands implements IAmDisposable {
 			analytics.logDebuggerHotReload();
 		}));
 		this.disposables.push(vs.commands.registerCommand("flutter.hotRestart", async (args?: any) => {
+			reporter.report("dart.hotRestart", "");
+
 			if (!debugSessions.length)
 				return;
 			if (!!workspaceContext.config?.flutterSyncScript) {
@@ -170,7 +175,8 @@ export class DebugCommands implements IAmDisposable {
 			await Promise.all(debugSessions.map((s) => s.session.customRequest("hotRestart", args)));
 			analytics.logDebuggerRestart();
 		}));
-		this.disposables.push(vs.commands.registerCommand("dart.startDebugging", (resource: vs.Uri, launchTemplate: any | undefined) => {
+		this.disposables.push(vs.commands.registerCommand("dart.", (resource: vs.Uri, launchTemplate: any | undefined) => {
+			reporter.report("dart.startDebugging", "");
 			const launchConfig = Object.assign(
 				{
 					name: dynamicDebugSessionName,
@@ -186,6 +192,7 @@ export class DebugCommands implements IAmDisposable {
 			vs.debug.startDebugging(vs.workspace.getWorkspaceFolder(resource), launchConfig);
 		}));
 		this.disposables.push(vs.commands.registerCommand("dart.startWithoutDebugging", (resource: vs.Uri, launchTemplate: any | undefined) => {
+			reporter.report("dart.startWithoutDebugging", "");
 			const launchConfig = Object.assign(
 				{
 					name: dynamicDebugSessionName,
@@ -202,6 +209,7 @@ export class DebugCommands implements IAmDisposable {
 		}));
 		this.disposables.push(vs.commands.registerCommand("dart.createLaunchConfiguration", this.createLaunchConfiguration, this));
 		this.disposables.push(vs.commands.registerCommand("dart.rerunLastDebugSession", () => {
+			reporter.report("dart.rerunLastDebugSession", "");
 			if (LastDebugSession.debugConfig) {
 				vs.debug.startDebugging(LastDebugSession.workspaceFolder, LastDebugSession.debugConfig);
 			} else {
@@ -209,6 +217,7 @@ export class DebugCommands implements IAmDisposable {
 			}
 		}));
 		this.disposables.push(vs.commands.registerCommand("dart.rerunLastTestDebugSession", () => {
+			reporter.report("dart.rerunTestDebugSession", "");
 			if (LastTestDebugSession.debugConfig) {
 				vs.debug.startDebugging(LastTestDebugSession.workspaceFolder, LastTestDebugSession.debugConfig);
 			} else {
@@ -218,6 +227,7 @@ export class DebugCommands implements IAmDisposable {
 
 		// Attach commands.
 		this.disposables.push(vs.commands.registerCommand("dart.attach", () => {
+			reporter.report("dart.attach", "");
 			vs.debug.startDebugging(undefined, {
 				name: "Dart: Attach to Process",
 				request: "attach",
@@ -225,6 +235,7 @@ export class DebugCommands implements IAmDisposable {
 			});
 		}));
 		this.disposables.push(vs.commands.registerCommand("flutter.attachProcess", () => {
+			reporter.report("dart.attachProcess", "");
 			vs.debug.startDebugging(undefined, {
 				name: "Flutter: Attach to Process",
 				request: "attach",
@@ -233,6 +244,7 @@ export class DebugCommands implements IAmDisposable {
 			});
 		}));
 		this.disposables.push(vs.commands.registerCommand("flutter.profileApp", async () => {
+			reporter.report("flutter.profileApp", "");
 			await vs.debug.startDebugging(undefined, {
 				flutterMode: "profile",
 				name: "Flutter: Run in Profile Mode",
@@ -246,6 +258,7 @@ export class DebugCommands implements IAmDisposable {
 			}
 		}));
 		this.disposables.push(vs.commands.registerCommand("flutter.attach", () => {
+			reporter.report("flutter.attach", "");
 			vs.debug.startDebugging(undefined, {
 				name: "Flutter: Attach to Device",
 				request: "attach",
@@ -253,6 +266,7 @@ export class DebugCommands implements IAmDisposable {
 			});
 		}));
 		this.disposables.push(vs.commands.registerCommand("dart.promptForVmService", async (defaultValueOrConfig: string | vs.DebugConfiguration | undefined): Promise<string | undefined> => {
+			reporter.report("dart.promptForVmService", "");
 			const defaultValue = typeof defaultValueOrConfig === "string" ? defaultValueOrConfig : undefined;
 			return vs.window.showInputBox({
 				ignoreFocusOut: true, // Don't close the window if the user tabs away to get the uri
@@ -293,6 +307,7 @@ export class DebugCommands implements IAmDisposable {
 	}
 
 	private async createLaunchConfiguration(resourceUri: vs.Uri) {
+		reporter.report("createLaunchConfiguration", "");
 		if (!resourceUri || resourceUri.scheme !== "file")
 			return;
 
@@ -370,6 +385,7 @@ export class DebugCommands implements IAmDisposable {
 	}
 
 	public handleBreakpointChange(e: vs.BreakpointsChangeEvent): void {
+		reporter.report("handleBreakpointChange", "");
 		if (hasPromptedAboutDebugSettings)
 			return;
 
@@ -661,12 +677,14 @@ export class DebugCommands implements IAmDisposable {
 	}
 
 	private toggleDebugOptions() {
+		reporter.report("toggleDebugOptions", "");
 		// -1 is because we skip the last combination when toggling since it seems uncommon.
 		this.currentDebugOption = (this.currentDebugOption + 1) % (debugOptionNames.length - 1);
 		this.applyNewDebugOption();
 	}
 
 	private applyNewDebugOption() {
+		reporter.report("applynewDebugOption", "");
 		this.debugOptions.text = `Debug ${debugOptionNames[this.currentDebugOption]}`;
 
 		const debugExternalPackageLibraries = this.currentDebugOption === DebugOption.MyCodePackages || this.currentDebugOption === DebugOption.MyCodePackagesSdk;

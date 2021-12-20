@@ -1,6 +1,7 @@
 "use strict";
 
 import * as vs from "vscode";
+import { reporter } from "../../shared/idg_reporter";
 import { FlutterWidgetItem } from "../flutter/flutter_outline_view";
 
 export const flutterOutlineCommands = [
@@ -22,6 +23,8 @@ export class FlutterOutlineCommands {
 	}
 
 	private applyRefactoring(refactorType: string): void {
+		reporter.report("flutter_outline.applyRefactoring", refactorType);
+
 		if (!this.tree.selection || this.tree.selection.length !== 1) {
 			console.error(`Invalid selection when running Flutter Outline refactor: ${refactorType}`);
 			return;

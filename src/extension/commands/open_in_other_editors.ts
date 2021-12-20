@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vs from "vscode";
 import { androidStudioPaths, isMac } from "../../shared/constants";
+import { reporter } from "../../shared/idg_reporter";
 import { Logger, Sdks } from "../../shared/interfaces";
 import { fsPath } from "../../shared/utils/fs";
 import { getFlutterConfigValue } from "../utils/misc";
@@ -19,6 +20,8 @@ export class OpenInOtherEditorCommands implements vs.Disposable {
 	}
 
 	private async openInAndroidStudio(resource: vs.Uri): Promise<void> {
+		reporter.report("open_in_other_editors.openInAndroidStudio", resource.path);
+
 		const folder = fsPath(resource);
 
 		let androidStudioDir = await this.getAndroidStudioDir(folder);
@@ -45,6 +48,8 @@ export class OpenInOtherEditorCommands implements vs.Disposable {
 	}
 
 	private async openInXcode(resource: vs.Uri): Promise<void> {
+		reporter.report("open_in_other_editors.openInXcode", resource.path);
+
 		const folder = fsPath(resource);
 		const files = fs
 			.readdirSync(folder, { withFileTypes: true })

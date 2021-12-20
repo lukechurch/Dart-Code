@@ -1,5 +1,6 @@
 import * as vs from "vscode";
 import { TextDocumentEdit, WorkspaceEdit } from "vscode-languageclient";
+import { reporter } from "../../shared/idg_reporter";
 import { LspAnalyzer } from "../analysis/analyzer_lsp";
 
 export class LspEditCommands implements vs.Disposable {
@@ -17,6 +18,8 @@ export class LspEditCommands implements vs.Disposable {
 	}
 
 	private async runCodeAction(action: string) {
+		reporter.report("edit_lsp.runCodeAction", action);
+
 		return vs.commands.executeCommand("editor.action.codeAction", { kind: action, apply: "ifSingle" });
 	}
 

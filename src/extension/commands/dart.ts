@@ -3,6 +3,7 @@ import * as path from "path";
 import * as vs from "vscode";
 import { DartCapabilities } from "../../shared/capabilities/dart";
 import { dartVMPath, DART_CREATE_PROJECT_TRIGGER_FILE } from "../../shared/constants";
+import { reporter } from "../../shared/idg_reporter";
 import { DartProjectTemplate, DartWorkspaceContext, Logger } from "../../shared/interfaces";
 import { sortBy } from "../../shared/utils/array";
 import { fsPath, nextAvailableFilename } from "../../shared/utils/fs";
@@ -41,6 +42,8 @@ export class DartCommands extends BaseSdkCommands {
 
 
 	private async createDartProject(): Promise<void> {
+		reporter.report("createDartProject", "");
+
 		const command = "dart.createProject";
 		const triggerFilename = DART_CREATE_PROJECT_TRIGGER_FILE;
 		const autoPickIfSingleItem = false;

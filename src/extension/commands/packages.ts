@@ -2,6 +2,7 @@ import * as path from "path";
 import * as vs from "vscode";
 import { DartCapabilities } from "../../shared/capabilities/dart";
 import { iUnderstandAction } from "../../shared/constants";
+import { reporter } from "../../shared/idg_reporter";
 import { DartWorkspaceContext, Logger } from "../../shared/interfaces";
 import { uniq } from "../../shared/utils";
 import { fsPath } from "../../shared/utils/fs";
@@ -45,13 +46,15 @@ export class PackageCommands extends BaseSdkCommands {
 		if (!uri || !(uri instanceof vs.Uri)) {
 			uri = await getFolderToRunCommandIn(this.logger, "Select which folder to get packages for");
 			// If the user cancelled, bail out (otherwise we'll prompt them again below).
-			if (!uri)
+			if (!uri) {
+				reporter.report("packages.getPackages", "");
 				return;
+			}
 		}
 		if (typeof uri === "string")
 			uri = vs.Uri.file(uri);
 
-
+		reporter.report("packages.getPackages", uri.path);
 		if (util.isInsideFlutterProject(uri)) {
 			return this.runFlutter(["pub", "get"], uri);
 		} else {
@@ -63,11 +66,15 @@ export class PackageCommands extends BaseSdkCommands {
 		if (!uri || !(uri instanceof vs.Uri)) {
 			uri = await getFolderToRunCommandIn(this.logger, "Select which folder to check for outdated packages");
 			// If the user cancelled, bail out (otherwise we'll prompt them again below).
-			if (!uri)
+			if (!uri) {
+				reporter.report("packages.listOutdatedPackages", "");
 				return;
+			}
 		}
 		if (typeof uri === "string")
 			uri = vs.Uri.file(uri);
+
+		reporter.report("packages.listOutdatedPackages", uri.path);
 
 		if (util.isInsideFlutterProject(uri))
 			return this.runFlutter(["pub", "outdated"], uri, true);
@@ -79,11 +86,16 @@ export class PackageCommands extends BaseSdkCommands {
 		if (!uri || !(uri instanceof vs.Uri)) {
 			uri = await getFolderToRunCommandIn(this.logger, "Select which folder to upgrade packages in");
 			// If the user cancelled, bail out (otherwise we'll prompt them again below).
-			if (!uri)
+			if (!uri) {
+				reporter.report("packages.upgradePackages", "");
 				return;
+			}
 		}
 		if (typeof uri === "string")
 			uri = vs.Uri.file(uri);
+
+		reporter.report("packages.upgradePackages", uri.path);
+
 		if (util.isInsideFlutterProject(uri))
 			return this.runFlutter(["pub", "upgrade"], uri);
 		else
@@ -91,6 +103,8 @@ export class PackageCommands extends BaseSdkCommands {
 	}
 
 	private async upgradePackagesMajorVersions(uri: string | vs.Uri | undefined) {
+		reporter.report("packages.upgradePackagesMajorVersions", "");
+
 		if (!this.dartCapabilities.supportsPubUpgradeMajorVersions) {
 			vs.window.showErrorMessage("Your current Dart SDK does not support 'pub upgrade --major-versions'");
 			return;
@@ -130,6 +144,8 @@ export class PackageCommands extends BaseSdkCommands {
 	}
 
 	private handlePubspecChange(uri: vs.Uri) {
+		reporter.report("packages.handlePubspecChange", uri.path);
+
 		const filePath = fsPath(uri);
 
 		// Never do anything for files inside hidden or build folders.
@@ -180,6 +196,8 @@ export class PackageCommands extends BaseSdkCommands {
 	}
 
 	public async fetchPackagesOrPrompt(uri: vs.Uri | undefined, options?: { alwaysPrompt?: boolean }): Promise<void> {
+		reporter.report("packages.fetchPackagesOrPrompt", "");
+
 		if (isFetchingPackages) {
 			this.logger.info(`Already running pub get, skipping!`);
 			return;

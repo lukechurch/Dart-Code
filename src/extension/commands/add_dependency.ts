@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vs from "vscode";
 import { DartCapabilities } from "../../shared/capabilities/dart";
+import { reporter } from "../../shared/idg_reporter";
 import { DartWorkspaceContext, Logger } from "../../shared/interfaces";
 import { PubApi } from "../../shared/pub/api";
 import { PackageCacheData } from "../../shared/pub/pub_add";
@@ -142,6 +143,7 @@ export class AddDependencyCommand extends BaseSdkCommands {
 		if (typeof uri === "string")
 			uri = vs.Uri.file(uri);
 
+		reporter.report("addDependency", uri.path);
 		const args = ["add"];
 		let packageName: string;
 		if (selectedPackage.marker === "GIT") {

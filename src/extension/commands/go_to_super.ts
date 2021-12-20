@@ -1,4 +1,5 @@
 import * as vs from "vscode";
+import { reporter } from "../../shared/idg_reporter";
 import { disposeAll } from "../../shared/utils";
 import { fsPath } from "../../shared/utils/fs";
 import { showCode, toRangeOnLine } from "../../shared/vscode/utils";
@@ -14,6 +15,8 @@ export class GoToSuperCommand implements vs.Disposable {
 	}
 
 	private async goToSuper(): Promise<void> {
+		reporter.report("go_to_super.goToSuper", "");
+
 		const editor = editors.getActiveDartEditor();
 		if (!editor) {
 			vs.window.showWarningMessage("No active Dart editor.");

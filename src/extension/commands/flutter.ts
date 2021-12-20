@@ -6,6 +6,7 @@ import { DartCapabilities } from "../../shared/capabilities/dart";
 import { FlutterCapabilities } from "../../shared/capabilities/flutter";
 import { vsCodeVersion } from "../../shared/capabilities/vscode";
 import { defaultLaunchJson } from "../../shared/constants";
+import { reporter } from "../../shared/idg_reporter";
 import { DartWorkspaceContext, FlutterCreateCommandArgs, FlutterCreateTriggerData, FlutterProjectTemplate, Logger } from "../../shared/interfaces";
 import { sortBy } from "../../shared/utils/array";
 import { stripMarkdown } from "../../shared/utils/dartdocs";
@@ -44,15 +45,20 @@ export class FlutterCommands extends BaseSdkCommands {
 	private async flutterClean(selection: vs.Uri | undefined): Promise<number | undefined> {
 		if (!selection) {
 			const path = await getFolderToRunCommandIn(this.logger, `Select the folder to run "flutter clean" in`, selection, true);
-			if (!path)
+			if (!path) {
+				reporter.report("flutter.flutterClean", "");
 				return;
+			}
 			selection = vs.Uri.file(path);
 		}
 
+		reporter.report("flutter.flutterClean", selection.path);
 		return this.runFlutter(["clean"], selection);
 	}
 
 	private async flutterScreenshot() {
+		reporter.report("flutter.flutterScreenshot", "");
+
 		let shouldNotify = false;
 
 		// If there is no path for this session, or it differs from config, use the one from config.
@@ -109,6 +115,8 @@ export class FlutterCommands extends BaseSdkCommands {
 	}
 
 	public flutterDoctor() {
+		reporter.report("flutter.flutterDoctor", "");
+
 		if (!this.workspace.sdks.flutter) {
 			this.sdkUtils.showFlutterActivationFailure("flutter.doctor");
 			return;
@@ -120,6 +128,8 @@ export class FlutterCommands extends BaseSdkCommands {
 	}
 
 	private async flutterUpgrade() {
+		reporter.report("flutter.flutterUpgrade", "");
+
 		if (!this.workspace.sdks.flutter) {
 			this.sdkUtils.showFlutterActivationFailure("flutter.upgrade");
 			return;
@@ -134,6 +144,9 @@ export class FlutterCommands extends BaseSdkCommands {
 	}
 
 	private async flutterCreate({ projectName, projectPath, triggerData, platform }: FlutterCreateCommandArgs) {
+		reporter.report("flutter.flutterCreate", "");
+
+
 		if (!projectPath) {
 			projectPath = await getFolderToRunCommandIn(this.logger, `Select the folder to run "flutter create" in`, undefined, true);
 			if (!projectPath)
@@ -186,6 +199,8 @@ export class FlutterCommands extends BaseSdkCommands {
 	}
 
 	private writeDefaultLaunchJson(projectPath: string) {
+		reporter.report("flutter.writeDefaultLaunchJson", "");
+
 		const launchJsonFolder = path.join(projectPath, vsCodeVersion.editorConfigFolder);
 		const launchJsonFile = path.join(launchJsonFolder, "launch.json");
 		if (!fs.existsSync(launchJsonFile)) {
@@ -230,6 +245,8 @@ export class FlutterCommands extends BaseSdkCommands {
 	}
 
 	private async createFlutterProject(): Promise<vs.Uri | undefined> {
+		reporter.report("flutter.createFlutterProject", "");
+
 		if (!this.sdks || !this.sdks.flutter) {
 			this.sdkUtils.showFlutterActivationFailure("flutter.createProject");
 			return;
@@ -252,6 +269,8 @@ export class FlutterCommands extends BaseSdkCommands {
 	}
 
 	private async createFlutterProjectForTemplate(template: string): Promise<vs.Uri | undefined> {
+		reporter.report("flutter.createFlutterProjectForTemplate", template);
+
 		if (!this.sdks || !this.sdks.flutter) {
 			this.sdkUtils.showFlutterActivationFailure("flutter.createProject");
 			return;
@@ -325,6 +344,8 @@ export class FlutterCommands extends BaseSdkCommands {
 	}
 
 	private async createFlutterSampleProject(): Promise<vs.Uri | undefined> {
+		reporter.report("flutter.createFlutterSampleProject", "");
+
 		if (!this.sdks || !this.sdks.flutter) {
 			this.sdkUtils.showFlutterActivationFailure("_dart.flutter.createSampleProject");
 			return;

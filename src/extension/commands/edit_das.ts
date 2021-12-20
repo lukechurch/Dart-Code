@@ -1,11 +1,13 @@
 import * as fs from "fs";
 import * as vs from "vscode";
 import * as as from "../../shared/analysis_server_types";
+import { reporter } from "../../shared/idg_reporter";
 import { Logger } from "../../shared/interfaces";
 import { errorString } from "../../shared/utils";
 import { fsPath } from "../../shared/utils/fs";
 import { DasAnalyzerClient } from "../analysis/analyzer_das";
 import * as editors from "../editors";
+
 
 export class DasEditCommands implements vs.Disposable {
 	private commands: vs.Disposable[] = [];
@@ -24,16 +26,21 @@ export class DasEditCommands implements vs.Disposable {
 	}
 
 	private organizeImports(document: vs.TextDocument): Thenable<void> {
+		reporter.report("edit_das.organizeImports", document.uri.path);
 		document = document || this.getActiveDoc();
 		return this.sendEdit(this.analyzer.editOrganizeDirectives, "Organize Imports", document);
 	}
 
 	private sortMembers(document: vs.TextDocument): Thenable<void> {
+		reporter.report("edit_das.sortMembers", document.uri.path);
+
 		document = document || this.getActiveDoc();
 		return this.sendEdit(this.analyzer.editSortMembers, "Sort Members", document);
 	}
 
 	private async completeStatement(): Promise<void> {
+		reporter.report("edit_das.completeStatement", "");
+
 		const editor = vs.window.activeTextEditor;
 		if (!editor || !editor.selection || !this.analyzer.capabilities.hasCompleteStatementFix)
 			return;
@@ -48,6 +55,8 @@ export class DasEditCommands implements vs.Disposable {
 	}
 
 	private async sendEdit(f: (a: { file: string }) => Thenable<{ edit: as.SourceFileEdit }>, commandName: string, document: vs.TextDocument): Promise<void> {
+		reporter.report("edit_das.sendEdit", "");
+
 		if (!document || !editors.isDartDocument(document)) {
 			vs.window.showWarningMessage("Not a Dart file.");
 			return;
@@ -94,6 +103,7 @@ export class DasEditCommands implements vs.Disposable {
 	}
 
 	private async applyEdits(initiatingDocument: vs.TextDocument, change: as.SourceChange): Promise<void> {
+		reporter.report("edit_das.applyEdits", initiatingDocument.uri.path);
 		// We can only apply with snippets if there's a single change.
 		if (change.edits.length === 1 && change.linkedEditGroups && change.linkedEditGroups.length !== 0)
 			return this.applyEditsWithSnippets(initiatingDocument, change);
@@ -163,6 +173,7 @@ export class DasEditCommands implements vs.Disposable {
 	}
 
 	private async applyEditsWithSnippets(initiatingDocument: vs.TextDocument, change: as.SourceChange): Promise<void> {
+		reporter.report("edit_das.applyEditsWithSnippets", initiatingDocument.uri.path);
 		const edit = change.edits[0];
 		const document = await vs.workspace.openTextDocument(edit.file);
 		const editor = await vs.window.showTextDocument(document);

@@ -1,11 +1,13 @@
 import * as path from "path";
 import * as vs from "vscode";
 import { modifyingFilesOutsideWorkspaceInfoUrl, moreInfoAction } from "../../shared/constants";
+import { reporter } from "../../shared/idg_reporter";
 import { disposeAll } from "../../shared/utils";
 import { fsPath } from "../../shared/utils/fs";
 import { envUtils } from "../../shared/vscode/utils";
 import { config } from "../config";
 import * as util from "../utils";
+
 
 export class FileChangeWarnings implements vs.Disposable {
 	private readonly disposables: vs.Disposable[] = [];
@@ -17,6 +19,8 @@ export class FileChangeWarnings implements vs.Disposable {
 	}
 
 	public onDidChangeTextDocument(e: vs.TextDocumentChangeEvent) {
+		reporter.report("onDidChangeTextDocument", e.document.uri.path);
+
 		if (!util.isAnalyzable(e.document))
 			return;
 

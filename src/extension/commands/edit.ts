@@ -1,5 +1,6 @@
 import * as vs from "vscode";
 import { dartRecommendedConfig, openSettingsAction } from "../../shared/constants";
+import { reporter } from "../../shared/idg_reporter";
 import { firstEditorColumn, showCode } from "../../shared/vscode/utils";
 import { writeToPseudoTerminal } from "../utils/vscode/terminals";
 
@@ -17,6 +18,7 @@ export class EditCommands implements vs.Disposable {
 	}
 
 	private async jumpToLineColInUri(uri: vs.Uri, lineNumber?: number, columnNumber?: number, inOtherEditorColumn?: boolean) {
+		reporter.report("edit.jumpToLineColInUrl", uri.path);
 		if (!uri || uri.scheme !== "file")
 			return;
 
@@ -69,6 +71,8 @@ export class EditCommands implements vs.Disposable {
 			return;
 		const document = editor.document;
 		const selections = editor.selections;
+		reporter.report("edit.toggleDartDocument", document.uri.path);
+
 
 		// Track the prefix that matches all lines in all selections.
 		// If any line does not start with `///` then it cannot be TRIPLE.
