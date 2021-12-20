@@ -16,45 +16,6 @@ export class IDGReporter {
 		console.log(uri);
 		const response = await this.wc.fetch(uri);
 		console.log(response);
-		// console.log(http.get(uri));
-		// console.log("Request sent");
-
-		console.log("About to call post");
-		// const r = await this.fetchHttp("localhost", "9999", "/");
-
-		console.log("Done");
-
-
-		// const options: http.RequestOptions = {
-		// 	headers: {
-		// 		"Content-Type": "application/x-www-form-urlencoded",
-		// 	},
-		// 	hostname: "127.0.0.1",
-		// 	method: "GET",
-		// 	path: "/idg?",
-		// 	port: 9999,
-		// };
-
-		// await new Promise<void>((resolve) => {
-		// 	try {
-		// 		const req = http.request(options, (resp) => {
-		// 			if (!resp || !resp.statusCode || resp.statusCode < 200 || resp.statusCode > 300) {
-		// 				console.log(`Failed to send analytics ${resp && resp.statusCode}: ${resp && resp.statusMessage}`);
-		// 			}
-		// 			resolve();
-		// 		});
-		// 		req.write("some data");
-		// 		req.on("error", (e) => {
-		// 			console.log(e);
-		// 			resolve();
-		// 		});
-		// 		req.end();
-		// 	} catch (e) {
-		// 		console.log(e);
-		// 		resolve();
-		// 	}
-		// });
-
 	}
 
 	private fetchHttp(hostname: string | undefined, port: string | undefined, path: string | undefined, headers: http.OutgoingHttpHeaders = {}): Promise<string> {
