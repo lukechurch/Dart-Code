@@ -3,12 +3,14 @@ import { commands, DiagnosticSeverity, languages, TextDocumentSaveReason, Uri, w
 import { FlutterCapabilities } from "../../shared/capabilities/flutter";
 import { restartReasonSave } from "../../shared/constants";
 import { VmService } from "../../shared/enums";
+import { reporter } from "../../shared/idg_reporter";
 import { IAmDisposable } from "../../shared/interfaces";
 import { disposeAll } from "../../shared/utils";
 import { fsPath } from "../../shared/utils/fs";
 import { DebugCommands } from "../commands/debug";
 import { config } from "../config";
 import { isWithinWorkspace, shouldHotReloadFor } from "../utils";
+
 
 export class HotReloadOnSaveHandler implements IAmDisposable {
 	private disposables: IAmDisposable[] = [];
@@ -48,6 +50,9 @@ export class HotReloadOnSaveHandler implements IAmDisposable {
 	}
 
 	private triggerReload(file: { uri: Uri, isUntitled?: boolean, languageId?: string }) {
+		reporter.report("hot_reload_save_handler.triggerReload", "");
+
+
 		const isAutoSave = this.lastSaveReason === TextDocumentSaveReason.FocusOut ||
 			this.lastSaveReason === TextDocumentSaveReason.AfterDelay;
 

@@ -1,5 +1,6 @@
 import * as vs from "vscode";
 import * as as from "../../shared/analysis_server_types";
+import { reporter } from "../../shared/idg_reporter";
 import { Logger } from "../../shared/interfaces";
 import { disposeAll } from "../../shared/utils";
 import { fsPath } from "../../shared/utils/fs";
@@ -17,6 +18,8 @@ export class TypeHierarchyCommand implements vs.Disposable {
 	}
 
 	private async showTypeHierarchy(): Promise<void> {
+		reporter.report("type_hierachy.showTypeHieracy", "");
+
 		const editor = editors.getActiveDartEditor();
 		if (!editor) {
 			vs.window.showWarningMessage("No active Dart editor.");
@@ -67,6 +70,8 @@ export class TypeHierarchyCommand implements vs.Disposable {
 			return;
 		}
 		const location: as.Location = result.location;
+		reporter.report("type_hierachy.openLocation", location.file);
+
 		const document = await vs.workspace.openTextDocument(location.file);
 		const editor = await vs.window.showTextDocument(document, {
 			preserveFocus: asPreview,

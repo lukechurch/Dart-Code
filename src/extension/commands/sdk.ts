@@ -4,6 +4,7 @@ import * as vs from "vscode";
 import { DartCapabilities } from "../../shared/capabilities/dart";
 import { flutterPath } from "../../shared/constants";
 import { LogCategory } from "../../shared/enums";
+import { reporter } from "../../shared/idg_reporter";
 import { CustomScript, DartSdks, DartWorkspaceContext, IAmDisposable, Logger, SpawnedProcess } from "../../shared/interfaces";
 import { logProcess } from "../../shared/logging";
 import { getPubExecutionInfo } from "../../shared/processes";
@@ -63,10 +64,14 @@ export class BaseSdkCommands implements IAmDisposable {
 	}
 
 	protected runFlutter(args: string[], selection: vs.Uri | undefined, alwaysShowOutput = false): Thenable<number | undefined> {
+		reporter.report("sdk.runFlutter", args.toString() );
+
 		return this.runCommandForWorkspace(this.runFlutterInFolder.bind(this), `Select the folder to run "flutter ${args.join(" ")}" in`, args, selection, alwaysShowOutput);
 	}
 
 	protected runFlutterInFolder(folder: string, args: string[], shortPath: string | undefined, alwaysShowOutput = false, customScript?: CustomScript): Thenable<number | undefined> {
+		reporter.report("sdk.runFlutterInFolder", args.toString() );
+
 		if (!this.sdks.flutter)
 			throw new Error("Flutter SDK not available");
 
@@ -84,10 +89,14 @@ export class BaseSdkCommands implements IAmDisposable {
 	}
 
 	protected runPub(args: string[], selection: vs.Uri | undefined, alwaysShowOutput = false): Thenable<number | undefined> {
+		reporter.report("sdk.runPub", args.toString() );
+
 		return this.runCommandForWorkspace(this.runPubInFolder.bind(this), `Select the folder to run "pub ${args.join(" ")}" in`, args, selection, alwaysShowOutput);
 	}
 
 	protected runPubInFolder(folder: string, args: string[], shortPath: string, alwaysShowOutput = false): Thenable<number | undefined> {
+		reporter.report("sdk.runPubInFolder", args.toString() );
+
 		if (!this.sdks.dart)
 			throw new Error("Dart SDK not available");
 
@@ -109,6 +118,8 @@ export class BaseSdkCommands implements IAmDisposable {
 		// Figure out if there's already one of this command running, in which case we'll chain off the
 		// end of it.
 		const commandId = `${folder}|${commandName}|${args}`;
+		reporter.report("sdk.runCommandInFolder", commandId );
+
 		const existingProcess = this.runningCommands[commandId];
 		if (existingProcess && !existingProcess.hasStarted) {
 			// We already have a queued version of this command so there's no value in queueing another

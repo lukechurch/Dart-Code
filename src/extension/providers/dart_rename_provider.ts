@@ -1,9 +1,11 @@
 import { CancellationToken, OutputChannel, Position, Range, RenameProvider, TextDocument, Uri, workspace, WorkspaceEdit } from "vscode";
 import * as as from "../../shared/analysis_server_types";
+import { reporter } from "../../shared/idg_reporter";
 import { fsPath } from "../../shared/utils/fs";
 import { toRange } from "../../shared/vscode/utils";
 import { DasAnalyzerClient } from "../analysis/analyzer_das";
 import * as channels from "../commands/channels";
+
 
 export class DartRenameProvider implements RenameProvider {
 	constructor(private readonly analyzer: DasAnalyzerClient) { }
@@ -17,6 +19,8 @@ export class DartRenameProvider implements RenameProvider {
 	}
 
 	private async doRename(document: TextDocument, position: Position, newName: string, token: CancellationToken): Promise<WorkspaceEdit | undefined> {
+		reporter.report("dart_rename_provider.doRename", newName);
+
 		const outputChannel = channels.getOutputChannel("Refactorings");
 		outputChannel.appendLine("");
 

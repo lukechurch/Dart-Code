@@ -16,6 +16,8 @@ import { FLUTTER_SUPPORTS_ATTACH } from "../extension";
 import { promptToReloadExtension } from "../utils";
 import { getFlutterConfigValue } from "../utils/misc";
 import { getGlobalFlutterArgs, getToolEnv, runToolProcess, safeToolSpawn } from "../utils/processes";
+import { reporter } from "../../shared/idg_reporter";
+import { report } from "process";
 
 export class FlutterDaemon extends StdIOService<UnknownNotification> implements IFlutterDaemon {
 	private hasStarted = false;
@@ -81,6 +83,7 @@ export class FlutterDaemon extends StdIOService<UnknownNotification> implements 
 	}
 
 	protected sendMessage<T>(json: string) {
+		reporter.report("flutter_daemon.sendMessage", json);
 		try {
 			super.sendMessage(json);
 		} catch (e) {

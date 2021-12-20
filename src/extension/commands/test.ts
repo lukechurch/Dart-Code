@@ -4,6 +4,7 @@ import * as vs from "vscode";
 import { FlutterCapabilities } from "../../shared/capabilities/flutter";
 import { noAction } from "../../shared/constants";
 import { TestStatus } from "../../shared/enums";
+import { reporter } from "../../shared/idg_reporter";
 import { Logger } from "../../shared/interfaces";
 import { GroupNode, SuiteData, SuiteNode, TestModel, TestNode, TreeNode } from "../../shared/test/test_model";
 import { disposeAll, escapeDartString, generateTestNameFromFileName } from "../../shared/utils";
@@ -58,6 +59,7 @@ export class TestCommands implements vs.Disposable {
 		// integration tests with non-integration tests.
 		// So, fetch all project folders, then if we have suites in them, group them by that folders (and whether
 		// they're integration/non-integration), and otherwise use their 'test'/'integration_test' folders.
+		reporter.report("test.runAllTestsWithoutDebugging", "");
 
 		const projectsWithTests: Array<{ projectFolder: string, name: string, tests: string[] }> = [];
 
@@ -115,6 +117,8 @@ export class TestCommands implements vs.Disposable {
 	}
 
 	private runTests(programPath: string, debug: boolean, testNames: TestName[] | undefined, shouldRunSkippedTests: boolean, suppressPromptOnErrors: boolean, launchTemplate: any | undefined, testRun: vs.TestRun | undefined, token: vs.CancellationToken | undefined): Promise<boolean> {
+		reporter.report("test.runAllTests", programPath);
+
 		const subs: vs.Disposable[] = [];
 		return new Promise<boolean>(async (resolve, reject) => {
 			let testsName = path.basename(programPath);

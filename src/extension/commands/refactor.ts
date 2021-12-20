@@ -3,6 +3,7 @@ import * as path from "path";
 import * as vs from "vscode";
 import * as as from "../../shared/analysis_server_types";
 import { REFACTOR_ANYWAY, REFACTOR_FAILED_DOC_MODIFIED } from "../../shared/constants";
+import { reporter } from "../../shared/idg_reporter";
 import { Logger } from "../../shared/interfaces";
 import { flatMap } from "../../shared/utils";
 import { unique } from "../../shared/utils/array";
@@ -30,6 +31,8 @@ export class RefactorCommands implements vs.Disposable {
 	}
 
 	private async performRefactor(document: vs.TextDocument, range: vs.Range, refactorKind: as.RefactoringKind): Promise<void> {
+		reporter.report("refactor.performRefactor", `{ "uri" : ${document.uri.path}, "kind" : ${refactorKind} }` );
+
 		// Ensure the document is still valid.
 		if (!document || document.isClosed)
 			return;
