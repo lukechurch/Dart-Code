@@ -1,9 +1,39 @@
 import * as http from "http";
+import * as vs from "vscode";
 import { WebClient } from "./fetch";
 
 export class IDGReporter {
 	constructor() {
 		this.wc = new WebClient("IDG");
+
+		const port = 9991;
+
+		const server = http.createServer((request: http.IncomingMessage, response: http.ServerResponse) => {
+			// if (request.url is not string) return;
+			const reqUrl = decodeURI(request.url!);
+			const verb = reqUrl?.split("?")[1].split("=")[0];
+
+			if (verb === "open") {
+				const target = reqUrl?.substring("/open?=".length);
+				response.write("opening: ");
+				response.write(target);
+				const uri = vs.Uri.file(target);
+				vs.commands.executeCommand("vscode.open", uri);
+			} else {
+				response.write("Unknown command");
+				response.write(reqUrl);
+			}
+
+		  response.end("Done!"); // let uri = Uri.file('/some/path/to/folder');
+		});
+		server.listen(port, () => {
+		//   if (error) {
+			// console.log(error);
+		//   } else {
+			console.log(`Server listening on port ${port}`);
+		//   }
+		});
+
 	}
 
 	private wc : WebClient;
